@@ -129,13 +129,13 @@ unsigned long LoopMode0::mFrameTimeElapsed = 0UL;
 
 enum SvetoforModes
 {
-  MODE_OFF = 0,
-  MODE_RED_ON = 1,
-  MODE_YELLOW_ON = 2,
-  MODE_GREEN_ON = 3,
-  MODE_ALL_ON = 4,
-  MODE_LM0 = 5,
-  MODES_COUNT
+    MODE_OFF = 0,
+    MODE_RED_ON = 1,
+    MODE_YELLOW_ON = 2,
+    MODE_GREEN_ON = 3,
+    MODE_ALL_ON = 4,
+    MODE_LM0 = 5,
+    MODES_COUNT
 };
 
 unsigned currMode = MODE_OFF;
@@ -144,180 +144,159 @@ bool modeIsSet = false;
 OneButton btn0(A0, true);
 OneButton btn1(A1, true);
 
-void setup() {
-  Serial.begin(115200);
+void setup()
+{
+    Serial.begin(115200);
 //  while(!Serial) {;} //Wait for Leonardo
-  Serial.println("Svetofor starts");
-  Serial.print("Mode: ");
-  Serial.println(currMode, DEC);
+    if (Serial)
+    {
+        Serial.println("Svetofor starts");
+        Serial.print("Mode: ");
+        Serial.println(currMode, DEC);
+    }
 
-  timer_init_ISR_100Hz(TIMER_DEFAULT);
+    timer_init_ISR_100Hz(TIMER_DEFAULT);
 
-  btn0.attachClick(click0);
-  btn1.attachClick(click1);
+    btn0.attachClick(click0);
+    btn1.attachClick(click1);
 
-  pinMode(LED_RED, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_GREEN, OUTPUT);
+    pinMode(LED_RED, OUTPUT);
+    pinMode(LED_YELLOW, OUTPUT);
+    pinMode(LED_GREEN, OUTPUT);
 
-  digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_YELLOW, HIGH);
-  digitalWrite(LED_GREEN, HIGH);
-  delay(500);
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW); 
-  delay(100);
-  digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_YELLOW, HIGH);
-  digitalWrite(LED_GREEN, HIGH);
-  delay(500);
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW); 
-  delay(100);
-  digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_YELLOW, HIGH);
-  digitalWrite(LED_GREEN, HIGH);
-  delay(500);
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW); 
-  delay(100);
+    digitalWrite(LED_RED, HIGH);
+    digitalWrite(LED_YELLOW, HIGH);
+    digitalWrite(LED_GREEN, HIGH);
+    delay(700);
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_YELLOW, LOW);
+    digitalWrite(LED_GREEN, LOW);
+    delay(100);
 }
 
 void loop()
 {
-  btn0.tick();
-  btn1.tick();
+    btn0.tick();
+    btn1.tick();
 
-/*
-  digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW);
-  delay(1500);
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, HIGH);
-  digitalWrite(LED_GREEN, LOW);
-  delay(1500);
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, HIGH);
-  delay(1500);
-*/
-
-delay(5);
+    delay(5);
 }
 
 void click0()
 {
-  Serial.println("0 click");
-  if (currMode < MODES_COUNT - 1)
-  {
-    currMode += 1;
-  }
-  else
-  {
-    currMode = MODE_OFF;
-  }
-  modeIsSet = false;
-  Serial.print("Mode: ");
-  Serial.println(currMode, DEC);
+    if (currMode < MODES_COUNT - 1)
+    {
+        currMode += 1;
+    }
+    else
+    {
+        currMode = MODE_OFF;
+    }
+    modeIsSet = false;
+
+    if (Serial)
+    {
+        Serial.print("Mode: ");
+        Serial.println(currMode, DEC);
+    }
 }
 
 void click1()
 {
-  Serial.println("1 click");
-  if (currMode > MODE_OFF)
-  {
-    currMode -= 1;
-  }
-  else
-  {
-    currMode = MODES_COUNT - 1;
-  }
-  modeIsSet = false;
-  Serial.print("Mode: ");
-  Serial.println(currMode, DEC);
+    if (currMode > MODE_OFF)
+    {
+        currMode -= 1;
+    }
+    else
+    {
+        currMode = MODES_COUNT - 1;
+    }
+    modeIsSet = false;
+
+    if (Serial)
+    {
+        Serial.print("Mode: ");
+        Serial.println(currMode, DEC);
+    }
 }
 
 void timer_handle_interrupts(int timer)
 {
-  static unsigned long prevTime = 0;
+    static unsigned long prevTime = 0;
 
-  unsigned long currTime = micros();
-  unsigned long deltaTime = currTime - prevTime;
-  prevTime = currTime;
+    unsigned long currTime = micros();
+    unsigned long deltaTime = currTime - prevTime;
+    prevTime = currTime;
 
 
-  switch (currMode) {
+    switch (currMode) {
     case MODE_OFF:
-      if (modeIsSet)
-      {
-        return;
-      }
-      digitalWrite(LED_RED, LOW);
-      digitalWrite(LED_YELLOW, LOW);
-      digitalWrite(LED_GREEN, LOW);
-      modeIsSet = true;
-    break;
+        if (modeIsSet)
+        {
+            return;
+        }
+        digitalWrite(LED_RED, LOW);
+        digitalWrite(LED_YELLOW, LOW);
+        digitalWrite(LED_GREEN, LOW);
+        modeIsSet = true;
+        break;
 
     case MODE_RED_ON:
-      if (modeIsSet)
-      {
-        return;
-      }
-      digitalWrite(LED_RED, HIGH);
-      digitalWrite(LED_YELLOW, LOW);
-      digitalWrite(LED_GREEN, LOW);
-      modeIsSet = true;
-    break;
+        if (modeIsSet)
+        {
+            return;
+        }
+        digitalWrite(LED_RED, HIGH);
+        digitalWrite(LED_YELLOW, LOW);
+        digitalWrite(LED_GREEN, LOW);
+        modeIsSet = true;
+        break;
 
     case MODE_YELLOW_ON:
-      if (modeIsSet)
-      {
-        return;
-      }
-      digitalWrite(LED_RED, LOW);
-      digitalWrite(LED_YELLOW, HIGH);
-      digitalWrite(LED_GREEN, LOW);
-      modeIsSet = true;
-    break;
+        if (modeIsSet)
+        {
+            return;
+        }
+        digitalWrite(LED_RED, LOW);
+        digitalWrite(LED_YELLOW, HIGH);
+        digitalWrite(LED_GREEN, LOW);
+        modeIsSet = true;
+        break;
 
     case MODE_GREEN_ON:
-      if (modeIsSet)
-      {
-        return;
-      }
-      digitalWrite(LED_RED, LOW);
-      digitalWrite(LED_YELLOW, LOW);
-      digitalWrite(LED_GREEN, HIGH);
-      modeIsSet = true;
-    break;
+        if (modeIsSet)
+        {
+            return;
+        }
+        digitalWrite(LED_RED, LOW);
+        digitalWrite(LED_YELLOW, LOW);
+        digitalWrite(LED_GREEN, HIGH);
+        modeIsSet = true;
+        break;
 
     case MODE_ALL_ON:
-      if (modeIsSet)
-      {
-        return;
-      }
-      digitalWrite(LED_RED, HIGH);
-      digitalWrite(LED_YELLOW, HIGH);
-      digitalWrite(LED_GREEN, HIGH);
-      modeIsSet = true;
-    break;
+        if (modeIsSet)
+        {
+            return;
+        }
+        digitalWrite(LED_RED, HIGH);
+        digitalWrite(LED_YELLOW, HIGH);
+        digitalWrite(LED_GREEN, HIGH);
+        modeIsSet = true;
+        break;
 
     case MODE_LM0:
-      if (!modeIsSet)
-      {
-        LoopMode0::reset();
-        modeIsSet = true;
-      }
-      LoopMode0::update(deltaTime);
-    break;
+        if (!modeIsSet)
+        {
+            LoopMode0::reset();
+            modeIsSet = true;
+        }
+        LoopMode0::update(deltaTime);
+        break;
 
     default:
-      Serial.print("Unknown mode: ");
-      Serial.println(currMode);
-    break;
-  }
+        Serial.print("Unknown mode: ");
+        Serial.println(currMode);
+        break;
+    }
 }
