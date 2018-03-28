@@ -1,27 +1,3 @@
-/*
-  Blink
-
-  Turns an LED on for one second, then off for one second, repeatedly.
-
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://www.arduino.cc/en/Main/Products
-
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman
-
-  This example code is in the public domain.
-
-  http://www.arduino.cc/en/Tutorial/Blink
-*/
-
 #include "OneButton.h"
 #include "timer-api.h"
 
@@ -42,8 +18,8 @@ enum SvetoforModes
 unsigned currMode = MODE_OFF;
 bool modeIsSet = false;
 
-OneButton btn0(A0, true);
-OneButton btn1(A1, true);
+OneButton btnForward(A0, true);
+OneButton btnBackward(A1, true);
 
 void setup()
 {
@@ -58,8 +34,8 @@ void setup()
 
     timer_init_ISR_100Hz(TIMER_DEFAULT);
 
-    btn0.attachClick(click0);
-    btn1.attachClick(click1);
+    btnForward.attachClick(onClickForward);
+    btnBackward.attachClick(onClickBackward);
 
     pinMode(LED_RED, OUTPUT);
     pinMode(LED_YELLOW, OUTPUT);
@@ -89,13 +65,13 @@ void setup()
 
 void loop()
 {
-    btn0.tick();
-    btn1.tick();
+    btnForward.tick();
+    btnBackward.tick();
 
     delay(5);
 }
 
-void click0()
+void onClickForward()
 {
     if (currMode < MODES_COUNT - 1)
     {
@@ -114,7 +90,7 @@ void click0()
     }
 }
 
-void click1()
+void onClickBackward()
 {
     if (currMode > MODE_OFF)
     {
@@ -208,8 +184,11 @@ void timer_handle_interrupts(int timer)
         break;
 
     default:
-        Serial.print("Unknown mode: ");
-        Serial.println(currMode);
+        if (Serial)
+        {
+            Serial.print("Unknown mode: ");
+            Serial.println(currMode);
+        }
         break;
     }
 }

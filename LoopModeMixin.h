@@ -25,19 +25,18 @@ struct Frame
     {}
 };
 
-template<typename DerivedSModeT, uint8_t framesNumberV>
+template<typename DerivedLoopModeT, uint8_t framesNumberV>
 struct LoopModeMixin
 {
-    /* using BaseType LoopModeMixin<DerivedSModeT>; */
-    /* using ActualType DerivedSModeT; */
+    using BaseLoopModeType = LoopModeMixin<DerivedLoopModeT, framesNumberV>;
+    using ActualLoopModeType = DerivedLoopModeT;
 
     inline static void reset()
     {
         mCurrFrame = 0;
         applyFrame();
 
-        DerivedSModeT::onReset();
-        /* ActualType::onReset(); */
+        ActualLoopModeType::onReset();
     }
 
     inline static void update(unsigned long deltaTime)
@@ -55,8 +54,7 @@ struct LoopModeMixin
 
         mFrameTimeElapsed += deltaTime;
 
-        DerivedSModeT::onUpdate(deltaTime);
-        /* ActualType::onUpdate(deltaTime); */
+        ActualLoopModeType::onUpdate(deltaTime);
     }
 
 protected:
@@ -78,8 +76,8 @@ protected:
     static unsigned long mFrameTimeElapsed;
 };
 
-template<typename DerivedSModeT, uint8_t framesNumberV>
-uint8_t LoopModeMixin<DerivedSModeT, framesNumberV>::mCurrFrame = 0U;
+template<typename DerivedLoopModeT, uint8_t framesNumberV>
+uint8_t LoopModeMixin<DerivedLoopModeT, framesNumberV>::mCurrFrame = 0U;
 
-template<typename DerivedSModeT, uint8_t framesNumberV>
-unsigned long LoopModeMixin<DerivedSModeT, framesNumberV>::mFrameTimeElapsed = 0UL;
+template<typename DerivedLoopModeT, uint8_t framesNumberV>
+unsigned long LoopModeMixin<DerivedLoopModeT, framesNumberV>::mFrameTimeElapsed = 0UL;

@@ -2,12 +2,10 @@
 
 
 void LoopMode0::onReset()
-{
-}
+{}
 
 void LoopMode0::onUpdate(unsigned long deltaTime)
-{
-}
+{}
 
 LoopMode0::LoopMode0()
 {}
