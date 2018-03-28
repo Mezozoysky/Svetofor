@@ -25,106 +25,8 @@
 #include "OneButton.h"
 #include "timer-api.h"
 
-#define LED_RED 7
-#define LED_YELLOW 4
-#define LED_GREEN 2
-
-template<typename DerivedSModeT>
-struct LoopModeMixin
-{
-    /* using BaseType LoopModeMixin<DerivedSModeT>; */
-    /* using ActualType DerivedSModeT; */
-
-    inline static void reset()
-    {
-        DerivedSModeT::onReset();
-        /* ActualType::onReset(); */
-    }
-
-    inline static void update(unsigned long deltaTime)
-    {
-        DerivedSModeT::onUpdate(deltaTime);
-        /* ActualType::onUpdate(deltaTime); */
-    }
-
-protected:
-    LoopModeMixin()
-    {}
-};
-
-struct Frame
-{
-    bool red;
-    bool yellow;
-    bool green;
-    unsigned long frameTime;
-
-    Frame()
-    : red(false)
-    , yellow(false)
-    , green(false)
-    , frameTime(0UL)
-    {}
-
-    Frame( bool aRed, bool aYellow, bool aGreen, unsigned long aFrameTime )
-    : red(aRed)
-    , yellow(aYellow)
-    , green(aGreen)
-    , frameTime(aFrameTime)
-    {}
-};
-
-struct LoopMode0
-: public LoopModeMixin<LoopMode0>
-{
-    static void onReset()
-    {
-        mCurrFrame = 0;
-        applyFrame();
-    }
-
-    static void onUpdate(unsigned long deltaTime)
-    {
-        if (mFrameTimeElapsed >= mFrames[mCurrFrame].frameTime)
-        {
-            mCurrFrame += 1;
-            if ( mCurrFrame >= 3 )
-            {
-                mCurrFrame = 0;
-            }
-            applyFrame();
-            return;
-        }
-
-        mFrameTimeElapsed += deltaTime;
-    }
-
-private:
-    LoopMode0()
-    {}
-
-    static void applyFrame()
-    {
-        digitalWrite(LED_RED, mFrames[mCurrFrame].red ? HIGH : LOW);
-        digitalWrite(LED_YELLOW, mFrames[mCurrFrame].yellow ? HIGH : LOW);
-        digitalWrite(LED_GREEN, mFrames[mCurrFrame].green ? HIGH : LOW);
-        mFrameTimeElapsed = 0;
-    }
-
-private:
-    static Frame mFrames[3];
-    static uint8_t mCurrFrame;
-    static unsigned long mFrameTimeElapsed;
-};
-
-Frame LoopMode0::mFrames[3] = {
-    Frame(true, false, false, 1UL * 1000000UL),
-    Frame(false, true, false, 1UL * 1000000UL),
-    Frame(false, false, true, 1UL * 1000000UL)
-};
-
-uint8_t LoopMode0::mCurrFrame = 0U;
-unsigned long LoopMode0::mFrameTimeElapsed = 0UL;
+#include "Pins.h"
+#include "LoopMode0.h"
 
 
 enum SvetoforModes
@@ -164,14 +66,26 @@ void setup()
     pinMode(LED_YELLOW, OUTPUT);
     pinMode(LED_GREEN, OUTPUT);
 
+    pinMode(SPEAKER, OUTPUT);
+
+    delay(200);
     digitalWrite(LED_RED, HIGH);
     digitalWrite(LED_YELLOW, HIGH);
     digitalWrite(LED_GREEN, HIGH);
-    delay(700);
+    digitalWrite(SPEAKER, HIGH);
+    delay(100);
+    digitalWrite(SPEAKER, LOW);
+    delay(100);
+    digitalWrite(SPEAKER, HIGH);
+    delay(100);
+    digitalWrite(SPEAKER, LOW);
+    delay(100);
+    digitalWrite(SPEAKER, HIGH);
+    delay(100);
     digitalWrite(LED_RED, LOW);
     digitalWrite(LED_YELLOW, LOW);
     digitalWrite(LED_GREEN, LOW);
-    delay(100);
+    digitalWrite(SPEAKER, LOW);
 }
 
 void loop()
